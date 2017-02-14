@@ -160,6 +160,10 @@ public/editor.css: node_modules $(SASS_FILES)
 	@$(SASS) assets/stylesheets/editor.scss $@
 	@$(AUTOPREFIXER) $@
 
+public/directly.css: node_modules $(SASS_FILES)
+	@$(SASS) assets/stylesheets/directly.scss $@
+	@$(AUTOPREFIXER) $@
+
 server/devdocs/search-index.js: $(MD_FILES) $(ALL_DEVDOCS_JS)
 	@$(ALL_DEVDOCS_JS) $(MD_FILES)
 
@@ -179,7 +183,7 @@ build-server: install
 
 build: install build-$(CALYPSO_ENV)
 
-build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css
+build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css public/directly.css
 
 build-development: server/devdocs/proptypes-index.json server/devdocs/components-usage-stats.json build-server build-dll $(CLIENT_CONFIG_FILE) server/devdocs/search-index.js build-css
 
