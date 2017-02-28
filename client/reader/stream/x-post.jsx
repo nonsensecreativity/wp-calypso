@@ -78,6 +78,13 @@ class CrossPost extends PureComponent {
 		} );
 	}
 
+	handleClick = ( event ) => {
+		if ( event.button > 0 || event.metaKey || event.controlKey || event.shiftKey || event.altKey ) {
+			return;
+		}
+		this.props.handleClick( event );
+	}
+
 	render() {
 		const post = this.props.post,
 			articleClasses = classnames( {
@@ -92,18 +99,18 @@ class CrossPost extends PureComponent {
 		xpostTitle = xpostTitle.replace( /x-post:/i, '' );
 
 		return (
-			<Card tagName="article" onClick={ this.props.handleClick } className={ articleClasses }>
+			<Card tagName="article" onClick={ this.handleClick } className={ articleClasses }>
 				<SiteAndAuthorIcon
 					siteId={ this.props.post.site_ID }
 					isExternal={ this.props.post.is_external }
 					user={ post.author }
-					onClick={ this.props.handleClick }
+					onClick={ this.handleClick }
 					href={ post.URL } />
 				<div className="reader__x-post">
 					{ post.title &&
 						<h1 className="reader__post-title">
 							<a className="reader__post-title-link"
-									onClick={ this.props.handleClick }
+									onClick={ this.handleClick }
 									href={ post.URL }
 									target="_blank"
 									rel="noopener noreferrer">
