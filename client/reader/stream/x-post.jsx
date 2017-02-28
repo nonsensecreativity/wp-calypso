@@ -1,37 +1,80 @@
 /**
  * External Dependencies
  */
-import React, { PureComponent } from 'react';
-import classnames from 'classnames';
-import url from 'url';
-import { localize } from 'i18n-calypso';
+const ReactDom = require( 'react-dom' ),
+	React = require( 'react' ),
+	PureRenderMixin = require( 'react-pure-render/mixin' ),
+	classnames = require( 'classnames' ),
+	closest = require( 'component-closest' ),
+	url = require( 'url' );
 
 /**
  * Internal Dependencies
  */
-import Card from 'components/card';
-import SiteAndAuthorIcon from 'reader/site-and-author-icon';
+const Card = require( 'components/card' ),
+	SiteAndAuthorIcon = require( 'reader/site-and-author-icon' );
 
-class CrossPost extends PureComponent {
+const CrossPost = React.createClass( {
 
-	static propTypes = {
+	mixins: [ PureRenderMixin ],
+
+	propTypes: {
 		post: React.PropTypes.object.isRequired,
 		isSelected: React.PropTypes.bool.isRequired,
 		xMetadata: React.PropTypes.object.isRequired,
 		xPostedTo: React.PropTypes.array,
 		handleClick: React.PropTypes.func.isRequired
-	}
+	},
 
-	getSiteNameFromURL = ( siteURL ) => {
+	handleTitleClick: function( event ) {
+		// modified clicks should let the default action open a new tab/window
+		if ( event.button > 0 || event.metaKey || event.controlKey || event.shiftKey || event.altKey ) {
+			return;
+		}
+		event.preventDefault();
+		this.props.handleClick( this.props.xMetadata );
+	},
+
+	handleCardClick: function( event ) {
+		const rootNode = ReactDom.findDOMNode( this );
+
+		if ( closest( event.target, '.should-scroll', true, rootNode ) ) {
+			setTimeout( function() {
+				window.scrollTo( 0, 0 );
+			}, 100 );
+		}
+
+		if ( closest( event.target, '.ignore-click', true, rootNode ) ) {
+			return;
+		}
+
+		// ignore clicks on anchors inside inline content
+		if ( closest( event.target, 'a', true, rootNode ) && closest( event.target, '.reader__x-post', true, rootNode ) ) {
+			return;
+		}
+
+		// if the click has modifier, ignore it
+		if ( event.metaKey || event.controlKey || event.shiftKey || event.altKey ) {
+			return;
+		}
+
+		// programattic ignore
+		if ( ! event.defaultPrevented ) { // some child handled it
+			event.preventDefault();
+			this.props.handleClick( this.props.xMetadata );
+		}
+	},
+
+	getSiteNameFromURL: function( siteURL ) {
 		return `+${ url.parse( siteURL ).hostname.split( '.' )[ 0 ] }`;
-	}
+	},
 
-	getDescription = ( authorFirstName ) => {
+	getDescription: function( authorFirstName ) {
 		let label;
 		const siteName = this.getSiteNameFromURL( this.props.xMetadata.siteURL );
 		const isCrossComment = !! this.props.xMetadata.commentURL;
 		if ( isCrossComment ) {
-			label = this.props.translate( '{{author}}%(authorFirstName)s{{/author}} {{label}}left a comment on %(siteName)s, cross-posted to{{/label}} {{blogNames/}}', {
+			label = this.translate( '{{author}}%(authorFirstName)s{{/author}} {{label}}left a comment on %(siteName)s, cross-posted to{{/label}} {{blogNames/}}', {
 				args: {
 					siteName: siteName,
 					authorFirstName: authorFirstName
@@ -43,7 +86,7 @@ class CrossPost extends PureComponent {
 				}
 			} );
 		} else {
-			label = this.props.translate( '{{author}}%(authorFirstName)s{{/author}} {{label}}cross-posted from %(siteName)s to{{/label}} {{blogNames/}}', {
+			label = this.translate( '{{author}}%(authorFirstName)s{{/author}} {{label}}cross-posted from %(siteName)s to{{/label}} {{blogNames/}}', {
 				args: {
 					siteName: siteName,
 					authorFirstName: authorFirstName
@@ -56,9 +99,9 @@ class CrossPost extends PureComponent {
 			} );
 		}
 		return label;
-	}
+	},
 
-	getXPostedToContent = () => {
+	getXPostedToContent: function() {
 		let xPostedToList = this.props.xPostedTo;
 		if ( ! xPostedToList || xPostedToList.length === 0 ) {
 			xPostedToList = [ {
@@ -72,20 +115,13 @@ class CrossPost extends PureComponent {
 					{ xPostedTo.siteName }
 					{ index + 2 < array.length ? <span>, </span> : null }
 					{ index + 2 === array.length ?
-						<span> { this.props.translate( 'and', { comment: 'last conjuction in a list of blognames: (blog1, blog2,) blog3 _and_ blog4' } ) } </span> : null }
+						<span> { this.translate( 'and', { comment: 'last conjuction in a list of blognames: (blog1, blog2,) blog3 _and_ blog4' } ) } </span> : null }
 				</span>
 			);
 		} );
-	}
+	},
 
-	handleClick = ( event ) => {
-		if ( event.button > 0 || event.metaKey || event.controlKey || event.shiftKey || event.altKey ) {
-			return;
-		}
-		this.props.handleClick( event );
-	}
-
-	render() {
+	render: function() {
 		const post = this.props.post,
 			articleClasses = classnames( {
 				reader__card: true,
@@ -99,29 +135,23 @@ class CrossPost extends PureComponent {
 		xpostTitle = xpostTitle.replace( /x-post:/i, '' );
 
 		return (
-			<Card tagName="article" onClick={ this.handleClick } className={ articleClasses }>
+			<Card tagName="article" onClick={ this.handleCardClick } className={ articleClasses }>
 				<SiteAndAuthorIcon
 					siteId={ this.props.post.site_ID }
 					isExternal={ this.props.post.is_external }
 					user={ post.author }
-					onClick={ this.handleClick }
+					onClick={ this.handleTitleClick }
 					href={ post.URL } />
 				<div className="reader__x-post">
 					{ post.title &&
 						<h1 className="reader__post-title">
-							<a className="reader__post-title-link"
-									onClick={ this.handleClick }
-									href={ post.URL }
-									target="_blank"
-									rel="noopener noreferrer">
-								{ xpostTitle }
-							</a>
+							<a className="reader__post-title-link" onClick={ this.handleTitleClick } href={ post.URL } target="_blank" rel="noopener noreferrer">{ xpostTitle }</a>
 						</h1>
 						}
 					{ this.getDescription( post.author.first_name ) }
 				</div>
 			</Card> );
 	}
-}
+} );
 
-module.exports = localize( CrossPost );
+module.exports = CrossPost;
