@@ -50,7 +50,7 @@ export default class PagedStream {
 			orderBy: 'date',
 			_isLastPage: false,
 			_isFetchingNextPage: false,
-			keyMaker: spec.keyMaker,
+			keyMaker: spec.keyMaker
 		} );
 	}
 

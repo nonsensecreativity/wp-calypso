@@ -15,7 +15,7 @@ var Gap = React.createClass( {
 	propTypes: {
 		gap: React.PropTypes.object.isRequired,
 		store: React.PropTypes.object.isRequired,
-		selected: React.PropTypes.bool,
+		selected: React.PropTypes.bool
 	},
 
 	getInitialState: function() {
