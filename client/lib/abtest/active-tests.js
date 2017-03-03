@@ -113,25 +113,4 @@ module.exports = {
 		defaultVariation: 'withoutMarketingCopy',
 		allowExistingUsers: true
 	},
-
-	readerSearchOnFollowing: {
-		datestamp: '20170206',
-		variations: {
-			show: 50,
-			hide: 50
-		},
-		defaultVariation: 'hide',
-		allowExistingUsers: true,
-		allowAnyLocale: true
-	},
-
-	freeToPaidUpsell: {
-		datestamp: '20170222',
-		variations: {
-			sidebar: 50,
-			disabled: 50
-		},
-		defaultVariation: 'disabled',
-		allowExistingUsers: true
-	}
 };
