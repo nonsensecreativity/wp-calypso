@@ -14,7 +14,6 @@ import Stream from 'reader/stream';
 import EmptyContent from './empty';
 import HeaderBack from 'reader/header-back';
 import SearchInput from 'components/search';
-import i18nUtils from 'lib/i18n-utils';
 import SuggestionProvider from './suggestion-provider';
 import Suggestion from './suggestion';
 import { RelatedPostCard } from 'blocks/reader-related-card-v2';
