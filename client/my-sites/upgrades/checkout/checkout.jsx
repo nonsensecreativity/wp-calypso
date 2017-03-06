@@ -282,10 +282,12 @@ const Checkout = React.createClass( {
 		}
 
 		if ( receipt && receipt.receipt_id ) {
-			const receiptId = receipt.receipt_id;
+			const receiptId = receipt.receipt_id,
+				displayPrice = receipt.display_price;
 
 			this.props.fetchReceiptCompleted( receiptId, {
 				receiptId,
+				displayPrice,
 				purchases: this.flattenPurchases( this.props.transaction.step.data.purchases ),
 				failedPurchases: this.flattenPurchases( this.props.transaction.step.data.failed_purchases ),
 			} );
