@@ -64,6 +64,10 @@ class MediaLibraryUploadUrl extends Component {
 	}
 
 	onKeyDown = event => {
+		if ( event.key === 'Escape' ) {
+			return this.props.onClose( event );
+		}
+
 		if ( event.key !== 'Enter' ) {
 			return;
 		}
@@ -86,6 +90,7 @@ class MediaLibraryUploadUrl extends Component {
 					isError={ this.state.isError }
 					autoFocus
 					required />
+
 				<div className="media-library__upload-url-button-group">
 					<button type="submit" className="button is-primary">
 						{ translate( 'Upload', { context: 'verb' } ) }
